@@ -1,7 +1,7 @@
 
 #import "MDScrollView.h"
 
-@interface MVScrollView ()
+@interface MDScrollView ()
 @property (strong) UIView * extremeTop;
 @property (strong) UIView * extremeBottom;
 @end
@@ -9,10 +9,9 @@
 #define ExtremeAreaSize 400.0
 
 @implementation  MDScrollView
-
-+ (void) viewDidLoad
+- (void) awakeFromNib
 {
-    [super viewDidLoad];
+    [super awakeFromNib];
     
     self.extremeTop = [[UIView alloc] initWithFrame: CGRectMake(0, -ExtremeAreaSize, self.bounds.size.width, ExtremeAreaSize)];
     [self.extremeTop setBackgroundColor: [UIColor whiteColor]];
