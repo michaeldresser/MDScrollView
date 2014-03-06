@@ -5,21 +5,21 @@
 @interface MDScrollView : UIScrollView
 
 /**
- *  <#Description#>
+ *  Sets both the top and bottom extreme areas to the same color
  *
- *  @param color <#color description#>
+ *  @param color Color To Set
  */
 - (void) setExtremeAreaColor:(UIColor *) color;
 /**
- *  <#Description#>
+ *  Sets the color of area above the view
  *
- *  @param color <#color description#>
+ *  @param color Color To Set
  */
 - (void) setTopAreaExtremeColor:(UIColor *) color;
 /**
- *  <#Description#>
+ *  Sets the color of the area below the view
  *
- *  @param color <#color description#>
+ *  @param color Color To Set
  */
 - (void) setBottomAreaExtremeColor:(UIColor *) color;
 
