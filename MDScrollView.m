@@ -1,41 +1,63 @@
 
 #import "MDScrollView.h"
-
-@interface MDScrollView ()
-@property (strong) UIView * extremeTop;
-@property (strong) UIView * extremeBottom;
-@end
+#import <objc/runtime.h>
 
 #define ExtremeAreaSize 400.0
 
-@implementation  MDScrollView
+static void * ExtremeAreaKeyTop;
+static void * ExtremeAreaKeyBottom;
+
+@implementation  UIScrollView (MDScrollView)
+- (UIView *)topView
+{
+    return objc_getAssociatedObject(self, ExtremeAreaKeyTop);
+}
+
+- (UIView *)bottomView
+{
+    return objc_getAssociatedObject(self, ExtremeAreaKeyBottom);
+}
+
+- (void)setTopView: (UIView *) newView
+{
+    objc_setAssociatedObject(self, ExtremeAreaKeyTop, newView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void)setBottomView: (UIView *) newView
+{
+    objc_setAssociatedObject(self, ExtremeAreaKeyBottom, newView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 - (void) awakeFromNib
 {
     [super awakeFromNib];
     
-    self.extremeTop = [[UIView alloc] initWithFrame: CGRectMake(0, -ExtremeAreaSize, self.bounds.size.width, ExtremeAreaSize)];
-    [self.extremeTop setBackgroundColor: [UIColor whiteColor]];
-    [self addSubview: self.extremeTop];
+    UIView * extremeTop = [[UIView alloc] initWithFrame: CGRectMake(0, -ExtremeAreaSize, self.bounds.size.width, ExtremeAreaSize)];
+    [extremeTop setBackgroundColor: [UIColor whiteColor]];
+    [self addSubview: extremeTop];
     
-    self.extremeBottom = [[UIView alloc] initWithFrame: CGRectMake(0, self.contentSize.height, self.bounds.size.width, ExtremeAreaSize)];
-    [self.extremeBottom setBackgroundColor: [UIColor whiteColor]];
-    [self addSubview: self.extremeBottom];
+    UIView * extremeBottom = [[UIView alloc] initWithFrame: CGRectMake(0, (self.bounds.size.height > self.contentSize.height)?(self.bounds.size.height):(self.contentSize.height), self.bounds.size.width, ExtremeAreaSize)];
+    [extremeBottom setBackgroundColor: [UIColor whiteColor]];
+    [self addSubview: extremeBottom];
+    
+    [self setTopView: extremeTop];
+    [self setBottomView: extremeBottom];
 }
 
 - (void) setExtremeAreaColor:(UIColor *) color
 {
-    [self.extremeTop setBackgroundColor: color];
-    [self.extremeBottom setBackgroundColor: color];
+    [[self topView] setBackgroundColor: color];
+    [[self bottomView] setBackgroundColor: color];
 }
 
 - (void) setTopAreaExtremeColor:(UIColor *) color
 {
-    [self.extremeTop setBackgroundColor: color];
+    [[self topView] setBackgroundColor: color];
 }
 
 - (void) setBottomAreaExtremeColor:(UIColor *) color
 {
-    [self.extremeBottom setBackgroundColor: color];
+    [[self bottomView] setBackgroundColor: color];
 }
 
 - (void) layoutSubviews
@@ -47,7 +69,7 @@
     // in the right area is to update the location in the layoutsubviews, there
     // is problem a better place, somewhere that only gets updates when the content
     // changes.
-    self.extremeBottom .frame = CGRectMake(0, self.contentSize.height, self.bounds.size.width, ExtremeAreaSize);
+    [self bottomView].frame = CGRectMake(0, (self.bounds.size.height > self.contentSize.height)?(self.bounds.size.height):(self.contentSize.height), self.bounds.size.width, ExtremeAreaSize);
 }
 
 @end
