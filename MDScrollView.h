@@ -2,7 +2,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@interface MDScrollView : UIScrollView
+@interface UIScrollView (MDScrollView)
 
 /**
  *  Sets both the top and bottom extreme areas to the same color
