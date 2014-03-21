@@ -10,12 +10,36 @@ static void * ExtremeAreaKeyBottom;
 @implementation  UIScrollView (MDScrollView)
 - (UIView *)topView
 {
-    return objc_getAssociatedObject(self, ExtremeAreaKeyTop);
+    UIView * returnView = objc_getAssociatedObject(self, ExtremeAreaKeyTop);
+    
+    if (!returnView)
+    {
+        returnView = [[UIView alloc] initWithFrame: CGRectMake(0, -ExtremeAreaSize, self.bounds.size.width, ExtremeAreaSize)];
+        [self addSubview: returnView];
+        [self setTopView:returnView];
+    }
+    
+    return returnView;
+}
+
+- (bool) backingViewExists
+{
+    return objc_getAssociatedObject(self, ExtremeAreaKeyBottom);
 }
 
 - (UIView *)bottomView
 {
-    return objc_getAssociatedObject(self, ExtremeAreaKeyBottom);
+    UIView * returnView = objc_getAssociatedObject(self, ExtremeAreaKeyBottom);
+    
+    if(!returnView)
+    {
+        returnView = [[UIView alloc] initWithFrame: CGRectMake(0, (self.bounds.size.height > self.contentSize.height)?(self.bounds.size.height):(self.contentSize.height), self.bounds.size.width, ExtremeAreaSize)];
+        [self addSubview: returnView];
+        
+        [self setBottomView: returnView];
+    }
+    
+    return returnView;
 }
 
 - (void)setTopView: (UIView *) newView
@@ -26,22 +50,6 @@ static void * ExtremeAreaKeyBottom;
 - (void)setBottomView: (UIView *) newView
 {
     objc_setAssociatedObject(self, ExtremeAreaKeyBottom, newView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (void) awakeFromNib
-{
-    [super awakeFromNib];
-    
-    UIView * extremeTop = [[UIView alloc] initWithFrame: CGRectMake(0, -ExtremeAreaSize, self.bounds.size.width, ExtremeAreaSize)];
-    [extremeTop setBackgroundColor: [UIColor whiteColor]];
-    [self addSubview: extremeTop];
-    
-    UIView * extremeBottom = [[UIView alloc] initWithFrame: CGRectMake(0, (self.bounds.size.height > self.contentSize.height)?(self.bounds.size.height):(self.contentSize.height), self.bounds.size.width, ExtremeAreaSize)];
-    [extremeBottom setBackgroundColor: [UIColor whiteColor]];
-    [self addSubview: extremeBottom];
-    
-    [self setTopView: extremeTop];
-    [self setBottomView: extremeBottom];
 }
 
 - (void) setExtremeAreaColor:(UIColor *) color
@@ -69,7 +77,10 @@ static void * ExtremeAreaKeyBottom;
     // in the right area is to update the location in the layoutsubviews, there
     // is problem a better place, somewhere that only gets updates when the content
     // changes.
-    [self bottomView].frame = CGRectMake(0, (self.bounds.size.height > self.contentSize.height)?(self.bounds.size.height):(self.contentSize.height), self.bounds.size.width, ExtremeAreaSize);
+    if ([self backingViewExists])
+    {
+        [self bottomView].frame = CGRectMake(0, (self.bounds.size.height > self.contentSize.height)?(self.bounds.size.height):(self.contentSize.height), self.bounds.size.width, ExtremeAreaSize);
+    }
 }
 
 @end
